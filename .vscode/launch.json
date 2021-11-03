@@ -1,0 +1,44 @@
+{
+  // Use o IntelliSense para saber mais sobre os atributos possíveis.
+  // Focalizar para exibir as descrições dos atributos existentes.
+  // Para obter mais informações, acesse: https://go.microsoft.com/fwlink/?linkid=830387
+  "version": "0.2.0",
+  "configurations": [
+  // {
+  //     "name": "Remote Docker",
+  //     "type": "go",
+  //     "request": "launch",
+  //     "mode": "remote",
+  //     "remotePath":"/go/src/work/",
+  //     "port": 2345,
+  //     "host": "127.0.0.1",
+  //     "program": "${workspaceFolder}/golang/src/",
+  //     "args": [],
+  //     "trace" : "verbose",
+  //     "env" : {}
+  // },
+    {
+      "name": "Docker: Attach to Node",
+      "type": "node",
+      "request": "attach",
+      "port": 9229,
+      "address": "localhost",
+      "localRoot": "${workspaceFolder}",
+      "remoteRoot": "/home/api",
+      "protocol": "inspector",
+      "restart": true
+    },
+    {
+      "name": "Debug Tests",
+      "type": "node",
+      "request": "launch",
+      "runtimeArgs": [
+        "--inspect-brk",
+        "${workspaceRoot}/node_modules/.bin/jest",
+        "--runInBand"
+      ],
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen"
+    },
+  ]
+}
