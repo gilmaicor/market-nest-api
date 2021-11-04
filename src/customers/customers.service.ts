@@ -17,7 +17,7 @@ export class CustomersService {
   ) {}
 
   async create(createCustomerDto: CreateCustomerDto): Promise<Customer> {
-    const customer = await this.customerRepository.create(createCustomerDto);
+    const customer = this.customerRepository.create(createCustomerDto);
     const customerSaved = await this.customerRepository.save(customer);
     if (!customerSaved)
       throw new InternalServerErrorException('Problema ao criar cliente');

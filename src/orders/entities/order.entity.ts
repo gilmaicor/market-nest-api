@@ -43,7 +43,7 @@ export class Order {
   @JoinColumn()
   customer: Customer;
 
-  @ManyToMany(() => Product)
+  @ManyToMany((type) => Product)
   @JoinTable()
   products: Product[];
 

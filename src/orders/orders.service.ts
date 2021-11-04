@@ -17,7 +17,7 @@ export class OrdersService {
   ) {}
 
   async create(createOrderDto: CreateOrderDto): Promise<Order> {
-    const order = await this.orderRepository.create(createOrderDto);
+    const order = this.orderRepository.create(createOrderDto);
     const orderSaved = await this.orderRepository.save(order);
     if (!orderSaved)
       throw new InternalServerErrorException('Problema ao criar cliente');
@@ -26,7 +26,10 @@ export class OrdersService {
   }
 
   async findAll(): Promise<Order[]> {
-    const orders = await this.orderRepository.find();
+    const orders = await this.orderRepository.find({
+      relations: ['customer', 'products'],
+      loadEagerRelations: true,
+    });
     return orders;
   }
 
@@ -43,22 +46,25 @@ export class OrdersService {
 
   async update(id: number, updateOrderDto: UpdateOrderDto): Promise<Order> {
     const order = await this.findOne(id);
-    const updated = await this.orderRepository.update(order, {
-      ...updateOrderDto,
-    });
-    if (!updated) {
-      throw new InternalServerErrorException('Problema ao atualizar pedido');
-    }
     const orderUpdated = this.orderRepository.create({
       ...order,
       ...updateOrderDto,
     });
-    return orderUpdated;
+    const updated = await this.orderRepository.save(orderUpdated);
+    if (!updated) {
+      throw new InternalServerErrorException('Problema ao atualizar pedido');
+    }
+    return updated;
   }
 
   async remove(id: number): Promise<boolean> {
     const order = await this.findOne(id);
-    const deleted = await this.orderRepository.delete(order);
+    if (!order) {
+      throw new NotFoundException('Pedido não encontrado');
+    }
+    delete order.products;
+    const deleteable = await this.orderRepository.save(order);
+    const deleted = await this.orderRepository.delete(deleteable);
     return !!deleted;
   }
 }
