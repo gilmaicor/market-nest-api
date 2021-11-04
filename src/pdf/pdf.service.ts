@@ -12,10 +12,36 @@ export class PdfService {
       });
 
       // customize your PDF document
-      doc.text(`Cliente ${order.customer.name}`, 100, 50);
-      doc.text(`Cliente ${order.customer.name}`, 100, 55);
-      doc.text(`Cliente ${order.customer.name}`, 100, 60);
-      doc.text(`Cliente ${order.customer.name}`, 100, 65);
+      doc.text('Cliente', 100, 50);
+      doc.text(`Nome: ${order.customer.name}`, 100, 70);
+      doc.text(`E-mail: ${order.customer.email}`, 100, 90);
+      doc.text(`CPF: ${order.customer.cpf}`, 100, 110);
+
+      doc.text('Compra', 100, 150);
+      doc.text(
+        `Data: ${order.date.toLocaleDateString('pt-BR', { timeZone: 'UTC' })}`,
+        100,
+        170,
+      );
+      doc.text(`Pagamento: ${order.paymentMethod}`, 100, 190);
+
+      doc.text('Produtos', 100, 220);
+      let aux = 220;
+      order.products.forEach((produto) => {
+        doc.text(`Nome: ${produto.name}`, 100, aux + 20);
+        doc.text(`Tamanho: ${produto.size}`, 100, aux + 40);
+        doc.text(`Preço: R$${produto.price}`, 100, aux + 60);
+        aux += 60;
+      });
+
+      doc.text(
+        `Total: ${order.products.reduce((total, product) => {
+          return total + product.price;
+        }, 0)}`,
+        100,
+        aux + 20,
+      );
+
       doc.end();
 
       const buffer = [];
