@@ -93,27 +93,27 @@ describe('ProductsService', () => {
       expect(service.findOne).toHaveBeenCalledWith(1);
       expect(productUpdated).toBe(mockUpdatedProductModel);
     });
+  });
 
-    describe('When delete Product', () => {
-      it('Should delete a existing product', async () => {
-        service.findOne = jest.fn().mockReturnValueOnce(mockProductModel);
+  describe('When delete Product', () => {
+    it('Should delete a existing product', async () => {
+      service.findOne = jest.fn().mockReturnValueOnce(mockProductModel);
 
-        await service.remove(1);
+      await service.remove(1);
 
-        expect(service.findOne).toHaveBeenCalledWith(1);
-        expect(mockRepository.delete).toBeCalledWith(mockProductModel);
-      });
+      expect(service.findOne).toHaveBeenCalledWith(1);
+      expect(mockRepository.delete).toBeCalledWith(mockProductModel);
+    });
 
-      it('Should return an internal server error if repository does not delete the product', async () => {
-        service.findOne = jest.fn().mockReturnValueOnce(mockProductModel);
-        mockRepository.delete.mockReturnValueOnce(null);
+    it('Should return an internal server error if repository does not delete the product', async () => {
+      service.findOne = jest.fn().mockReturnValueOnce(mockProductModel);
+      mockRepository.delete.mockReturnValueOnce(null);
 
-        const deletedProduct = service.remove(1);
+      const deletedProduct = service.remove(1);
 
-        expect(service.findOne).toHaveBeenCalledWith(1);
-        expect(mockRepository.delete).toBeCalledWith(mockProductModel);
-        expect(deletedProduct).rejects.toThrow(InternalServerErrorException);
-      });
+      expect(service.findOne).toHaveBeenCalledWith(1);
+      expect(mockRepository.delete).toBeCalledWith(mockProductModel);
+      expect(deletedProduct).rejects.toThrow(InternalServerErrorException);
     });
   });
 });

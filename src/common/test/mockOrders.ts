@@ -27,7 +27,7 @@ export const mockOrderModel: Order = {
 
 export const mockUpdatedOrderModel: Order = {
   ...mockOrderModel,
-  paymentMethod: PaymentMethod.CHECK,
+  paymentMethod: PaymentMethod.CASH,
   beforeInsertActions: function (): void {
     throw new Error('Function not implemented.');
   },

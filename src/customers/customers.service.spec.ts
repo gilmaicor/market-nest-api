@@ -93,27 +93,27 @@ describe('CustomersService', () => {
       expect(service.findOne).toHaveBeenCalledWith(1);
       expect(customerUpdated).toBe(mockUpdatedCustomerModel);
     });
+  });
 
-    describe('When delete Customer', () => {
-      it('Should delete a existing customer', async () => {
-        service.findOne = jest.fn().mockReturnValueOnce(mockCustomerModel);
+  describe('When delete Customer', () => {
+    it('Should delete a existing customer', async () => {
+      service.findOne = jest.fn().mockReturnValueOnce(mockCustomerModel);
 
-        await service.remove(1);
+      await service.remove(1);
 
-        expect(service.findOne).toHaveBeenCalledWith(1);
-        expect(mockRepository.delete).toBeCalledWith(mockCustomerModel);
-      });
+      expect(service.findOne).toHaveBeenCalledWith(1);
+      expect(mockRepository.delete).toBeCalledWith(mockCustomerModel);
+    });
 
-      it('Should return an internal server error if repository does not delete the customer', async () => {
-        service.findOne = jest.fn().mockReturnValueOnce(mockCustomerModel);
-        mockRepository.delete.mockReturnValueOnce(null);
+    it('Should return an internal server error if repository does not delete the customer', async () => {
+      service.findOne = jest.fn().mockReturnValueOnce(mockCustomerModel);
+      mockRepository.delete.mockReturnValueOnce(null);
 
-        const deletedCustomer = service.remove(1);
+      const deletedCustomer = service.remove(1);
 
-        expect(service.findOne).toHaveBeenCalledWith(1);
-        expect(mockRepository.delete).toBeCalledWith(mockCustomerModel);
-        expect(deletedCustomer).rejects.toThrow(InternalServerErrorException);
-      });
+      expect(service.findOne).toHaveBeenCalledWith(1);
+      expect(mockRepository.delete).toBeCalledWith(mockCustomerModel);
+      expect(deletedCustomer).rejects.toThrow(InternalServerErrorException);
     });
   });
 });
