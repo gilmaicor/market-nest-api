@@ -1,4 +1,5 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, BeforeInsert } from 'typeorm';
+import { randomBytes } from 'crypto';
 
 export enum Color {
   BLUE = 'blue',
@@ -34,4 +35,9 @@ export class Product {
 
   @Column()
   price: number;
+
+  @BeforeInsert()
+  beforeInsertActions() {
+    this.code = randomBytes(3).toString('hex');
+  }
 }

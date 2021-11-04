@@ -1,27 +1,34 @@
-import { CreateCustomerDto } from 'src/customers/dto/create-customer.dto';
-import { UpdateCustomerDto } from 'src/customers/dto/update-customer.dto';
+import { CreateCustomerDto } from '../../customers/dto/create-customer.dto';
+import { UpdateCustomerDto } from '../../customers/dto/update-customer.dto';
 import { Customer, Gender } from './../../customers/entities/customer.entity';
+import { mockOrderModel } from './mockOrders';
 
 export const mockAddAccountParams: CreateCustomerDto = {
-  code: 'abc123',
-  name: 'Test Customer',
+  name: 'Test Customer 1',
   cpf: '19047878000',
   gender: Gender.OTHER,
   email: 'email1@email.com',
 };
 
 export const mockUpdateCustomerParams: UpdateCustomerDto = {
-  email: 'email-updated@email.com',
+  order: mockOrderModel,
 };
 
 export const mockCustomerModel: Customer = {
   id: 1,
   ...mockAddAccountParams,
+  code: '123abc',
+  beforeInsertActions: function (): void {
+    throw new Error('Function not implemented.');
+  },
 };
 
 export const mockUpdatedCustomerModel: Customer = {
   ...mockCustomerModel,
-  email: 'updated-email1@email.com',
+  order: mockOrderModel,
+  beforeInsertActions: function (): void {
+    throw new Error('Function not implemented.');
+  },
 };
 
 export const mockCustomerArrayModel: Customer[] = [
@@ -33,6 +40,9 @@ export const mockCustomerArrayModel: Customer[] = [
     cpf: '25605432060',
     gender: Gender.OTHER,
     email: 'email2@email.com',
+    beforeInsertActions: function (): void {
+      throw new Error('Function not implemented.');
+    },
   },
   {
     id: 3,
@@ -41,5 +51,8 @@ export const mockCustomerArrayModel: Customer[] = [
     cpf: '74513276045',
     gender: Gender.OTHER,
     email: 'email3@email.com',
+    beforeInsertActions: function (): void {
+      throw new Error('Function not implemented.');
+    },
   },
 ];

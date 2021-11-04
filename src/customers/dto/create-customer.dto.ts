@@ -1,13 +1,15 @@
-import { IsNotEmpty, IsString, IsEnum, Validate } from 'class-validator';
-import { randomBytes } from 'crypto';
+import {
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  IsEnum,
+  Validate,
+} from 'class-validator';
+import { Order } from '../../orders/entities/order.entity';
 import { Gender } from '../entities/customer.entity';
 import { ValidateCpf } from './validators/cpf.validator';
 
 export class CreateCustomerDto {
-  @IsString()
-  @IsNotEmpty({ message: 'Este campo não pode estar vazio' })
-  code: string = randomBytes(3).toString('hex');
-
   @IsString()
   @IsNotEmpty({ message: 'Este campo não pode estar vazio' })
   name: string;
@@ -26,4 +28,7 @@ export class CreateCustomerDto {
   @IsString()
   @IsNotEmpty({ message: 'Este campo não pode estar vazio' })
   email: string;
+
+  @IsOptional()
+  order?: Order;
 }

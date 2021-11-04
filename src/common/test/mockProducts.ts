@@ -3,7 +3,6 @@ import { UpdateProductDto } from 'src/products/dto/update-product.dto';
 import { Product, Color } from './../../products/entities/product.entity';
 
 export const mockAddAccountParams: CreateProductDto = {
-  code: 'abc123',
   name: 'Test Product 1',
   color: Color.UNDEFINED,
   size: 10,
@@ -17,11 +16,18 @@ export const mockUpdateProductParams: UpdateProductDto = {
 export const mockProductModel: Product = {
   id: 1,
   ...mockAddAccountParams,
+  code: '123abc',
+  beforeInsertActions: function (): void {
+    throw new Error('Function not implemented.');
+  },
 };
 
 export const mockUpdatedProductModel: Product = {
   ...mockProductModel,
   price: 11,
+  beforeInsertActions: function (): void {
+    throw new Error('Function not implemented.');
+  },
 };
 
 export const mockProductArrayModel: Product[] = [
@@ -33,6 +39,9 @@ export const mockProductArrayModel: Product[] = [
     color: Color.UNDEFINED,
     size: 10.6,
     price: 11,
+    beforeInsertActions: function (): void {
+      throw new Error('Function not implemented.');
+    },
   },
   {
     id: 3,
@@ -41,5 +50,8 @@ export const mockProductArrayModel: Product[] = [
     color: Color.UNDEFINED,
     size: 12,
     price: 23.3,
+    beforeInsertActions: function (): void {
+      throw new Error('Function not implemented.');
+    },
   },
 ];

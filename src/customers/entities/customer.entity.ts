@@ -1,4 +1,12 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  OneToOne,
+  BeforeInsert,
+} from 'typeorm';
+import { randomBytes } from 'crypto';
+import { Order } from '../../orders/entities/order.entity';
 
 export enum Gender {
   MALE = 'male',
@@ -29,4 +37,12 @@ export class Customer {
 
   @Column({ length: 100 })
   email: string;
+
+  @OneToOne((type) => Order)
+  order?: Order;
+
+  @BeforeInsert()
+  beforeInsertActions() {
+    this.code = randomBytes(3).toString('hex');
+  }
 }
