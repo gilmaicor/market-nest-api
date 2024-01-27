@@ -1,5 +1,4 @@
 import {
-  Inject,
   Injectable,
   InternalServerErrorException,
   NotFoundException,
@@ -8,11 +7,12 @@ import { Repository } from 'typeorm';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
 import { Order } from './entities/order.entity';
+import { InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
 export class OrdersService {
   constructor(
-    @Inject('ORDER_REPOSITORY')
+    @InjectRepository(Order)
     private orderRepository: Repository<Order>,
   ) {}
 
@@ -20,7 +20,7 @@ export class OrdersService {
     const order = this.orderRepository.create(createOrderDto);
     const orderSaved = await this.orderRepository.save(order);
     if (!orderSaved)
-      throw new InternalServerErrorException('Problema ao criar cliente');
+      throw new InternalServerErrorException('Falha ao criar Pedido');
 
     return orderSaved;
   }
@@ -34,7 +34,10 @@ export class OrdersService {
   }
 
   async findOne(id: number): Promise<Order> {
-    const order = await this.orderRepository.findOne(id, {
+    const order = await this.orderRepository.findOne({
+      where: {
+        id,
+      },
       relations: ['customer', 'products'],
       loadEagerRelations: true,
     });
@@ -45,16 +48,18 @@ export class OrdersService {
   }
 
   async update(id: number, updateOrderDto: UpdateOrderDto): Promise<Order> {
-    const order = await this.findOne(id);
-    const orderUpdated = this.orderRepository.create({
-      ...order,
+    const product = await this.findOne(id);
+    const updated = await this.orderRepository.update(product.id, {
       ...updateOrderDto,
     });
-    const updated = await this.orderRepository.save(orderUpdated);
     if (!updated) {
-      throw new InternalServerErrorException('Problema ao atualizar pedido');
+      throw new InternalServerErrorException('Falha ao atualizar Pedido');
     }
-    return updated;
+    const orderUpdated = this.orderRepository.create({
+      ...product,
+      ...updateOrderDto,
+    });
+    return orderUpdated;
   }
 
   async remove(id: number): Promise<boolean> {
@@ -64,7 +69,7 @@ export class OrdersService {
     }
     delete order.products;
     const deleteable = await this.orderRepository.save(order);
-    const deleted = await this.orderRepository.delete(deleteable);
+    const deleted = await this.orderRepository.delete(deleteable.id);
     return !!deleted;
   }
 }

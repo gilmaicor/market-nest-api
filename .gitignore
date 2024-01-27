@@ -1,8 +1,7 @@
 # compiled output
 /dist
-/database
 /node_modules
-.env
+/database
 
 # Logs
 logs

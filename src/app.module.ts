@@ -5,10 +5,15 @@ import { AppService } from './app.service';
 import { CustomersModule } from './customers/customers.module';
 import { OrdersModule } from './orders/orders.module';
 import { ProductsModule } from './products/products.module';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { dataSourceOptions } from './data-source';
 
 @Module({
   imports: [
-    ConfigModule.forRoot(),
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
+    TypeOrmModule.forRoot(dataSourceOptions),
     CustomersModule,
     ProductsModule,
     OrdersModule,

@@ -1,5 +1,4 @@
 import {
-  Inject,
   Injectable,
   InternalServerErrorException,
   NotFoundException,
@@ -8,11 +7,12 @@ import { Repository } from 'typeorm';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { Product } from './entities/product.entity';
+import { InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
 export class ProductsService {
   constructor(
-    @Inject('PRODUCT_REPOSITORY')
+    @InjectRepository(Product)
     private productRepository: Repository<Product>,
   ) {}
 
@@ -20,7 +20,7 @@ export class ProductsService {
     const product = this.productRepository.create(createProductDto);
     const productSaved = await this.productRepository.save(product);
     if (!productSaved)
-      throw new InternalServerErrorException('Problema ao criar cliente');
+      throw new InternalServerErrorException('Falha ao criar cliente');
 
     return productSaved;
   }
@@ -31,7 +31,11 @@ export class ProductsService {
   }
 
   async findOne(id: number): Promise<Product> {
-    const product = await this.productRepository.findOne(id);
+    const product = await this.productRepository.findOne({
+      where: {
+        id,
+      },
+    });
     if (!product) {
       throw new NotFoundException('Produto não encontrado');
     }
@@ -43,11 +47,11 @@ export class ProductsService {
     updateProductDto: UpdateProductDto,
   ): Promise<Product> {
     const product = await this.findOne(id);
-    const updated = await this.productRepository.update(product, {
+    const updated = await this.productRepository.update(product.id, {
       ...updateProductDto,
     });
     if (!updated) {
-      throw new InternalServerErrorException('Problema ao atualizar produto');
+      throw new InternalServerErrorException('Falha ao atualizar produto');
     }
     const productUpdated = this.productRepository.create({
       ...product,
@@ -58,7 +62,7 @@ export class ProductsService {
 
   async remove(id: number): Promise<boolean> {
     const product = await this.findOne(id);
-    const deleted = await this.productRepository.delete(product);
+    const deleted = await this.productRepository.delete(product.id);
     return !!deleted;
   }
 }
