@@ -2,7 +2,7 @@ import { CreateProductDto } from 'src/products/dto/create-product.dto';
 import { UpdateProductDto } from 'src/products/dto/update-product.dto';
 import { Product, Color } from './../../products/entities/product.entity';
 
-export const mockAddAccountParams: CreateProductDto = {
+export const mockCreateProductParams: CreateProductDto = {
   name: 'Test Product 1',
   color: Color.UNDEFINED,
   size: 10,
@@ -15,7 +15,7 @@ export const mockUpdateProductParams: UpdateProductDto = {
 
 export const mockProductModel: Product = {
   id: 1,
-  ...mockAddAccountParams,
+  ...mockCreateProductParams,
   code: '123abc',
   beforeInsertActions: function (): void {
     throw new Error('Function not implemented.');

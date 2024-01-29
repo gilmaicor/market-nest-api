@@ -8,24 +8,24 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { Customer } from './entities/customer.entity';
 import { CustomersService } from './customers.service';
 import {
-  mockAddAccountParams,
+  mockCreateCustomerParams,
   mockUpdateCustomerParams,
   mockUpdatedCustomerModel,
   mockCustomerModel,
   mockCustomerArrayModel,
 } from './../common/test/mockCustomers';
 
+export const mockRepository = {
+  find: jest.fn().mockReturnValue(mockCustomerArrayModel),
+  findOne: jest.fn().mockReturnValue(mockCustomerModel),
+  create: jest.fn().mockReturnValue(mockCustomerModel),
+  save: jest.fn().mockReturnValue(mockCustomerModel),
+  update: jest.fn().mockReturnValue(mockUpdatedCustomerModel),
+  delete: jest.fn().mockReturnValue({ affected: 1 }),
+};
+
 describe('CustomersService', () => {
   let service: CustomersService;
-
-  const mockRepository = {
-    find: jest.fn().mockReturnValue(mockCustomerArrayModel),
-    findOne: jest.fn().mockReturnValue(mockCustomerModel),
-    create: jest.fn().mockReturnValue(mockCustomerModel),
-    save: jest.fn().mockReturnValue(mockCustomerModel),
-    update: jest.fn().mockReturnValue(mockUpdatedCustomerModel),
-    delete: jest.fn().mockReturnValue({ affected: 1 }),
-  };
 
   beforeEach(async () => {
     jest.clearAllMocks();
@@ -79,9 +79,9 @@ describe('CustomersService', () => {
 
   describe('When create a customer', () => {
     it('Should create a customer', async () => {
-      const customer = await service.create(mockAddAccountParams);
+      const customer = await service.create(mockCreateCustomerParams);
 
-      expect(mockRepository.create).toHaveBeenCalledWith(mockAddAccountParams);
+      expect(mockRepository.create).toHaveBeenCalledWith(mockCreateCustomerParams);
       expect(mockRepository.save).toHaveBeenCalledTimes(1);
       expect(customer).toBe(mockCustomerModel);
     });
@@ -89,7 +89,7 @@ describe('CustomersService', () => {
     it('Should return an error if repository does not create a customer', async () => {
       mockRepository.save = jest.fn().mockReturnValue(null);
 
-      const customer = service.create(mockAddAccountParams);
+      const customer = service.create(mockCreateCustomerParams);
 
       expect(customer).rejects.toThrow(InternalServerErrorException);
     })
@@ -113,7 +113,7 @@ describe('CustomersService', () => {
       service.findOne = jest.fn().mockReturnValueOnce(mockCustomerModel);
       mockRepository.update = jest.fn().mockReturnValue(null);
 
-      const customerUpdated = service.update(1, mockAddAccountParams);
+      const customerUpdated = service.update(1, mockCreateCustomerParams);
 
       expect(customerUpdated).rejects.toThrow(InternalServerErrorException);
     })

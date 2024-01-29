@@ -8,24 +8,24 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { Order } from './entities/order.entity';
 import { OrdersService } from './orders.service';
 import {
-  mockAddAccountParams,
+  mockCreateOrderParams,
   mockUpdateOrderParams,
   mockUpdatedOrderModel,
   mockOrderModel,
   mockOrderArrayModel,
 } from './../common/test/mockOrders';
 
+export const mockRepository = {
+  find: jest.fn().mockReturnValue(mockOrderArrayModel),
+  findOne: jest.fn().mockReturnValue(mockOrderModel),
+  create: jest.fn().mockReturnValue(mockOrderModel),
+  save: jest.fn().mockReturnValue(mockOrderModel),
+  update: jest.fn().mockReturnValue(mockUpdatedOrderModel),
+  delete: jest.fn().mockReturnValue({ affected: 1 }),
+};
+
 describe('OrdersService', () => {
   let service: OrdersService;
-
-  const mockRepository = {
-    find: jest.fn().mockReturnValue(mockOrderArrayModel),
-    findOne: jest.fn().mockReturnValue(mockOrderModel),
-    create: jest.fn().mockReturnValue(mockOrderModel),
-    save: jest.fn().mockReturnValue(mockOrderModel),
-    update: jest.fn().mockReturnValue(mockUpdatedOrderModel),
-    delete: jest.fn().mockReturnValue({ affected: 1 }),
-  };
 
   const options = {
     loadEagerRelations: true,
@@ -82,9 +82,9 @@ describe('OrdersService', () => {
 
   describe('When create a order', () => {
     it('Should create a order', async () => {
-      const order = await service.create(mockAddAccountParams);
+      const order = await service.create(mockCreateOrderParams);
 
-      expect(mockRepository.create).toHaveBeenCalledWith(mockAddAccountParams);
+      expect(mockRepository.create).toHaveBeenCalledWith(mockCreateOrderParams);
       expect(mockRepository.save).toHaveBeenCalledTimes(1);
       expect(order).toBe(mockOrderModel);
     });
@@ -92,7 +92,7 @@ describe('OrdersService', () => {
     it('Should return an error if repository does not create an order', async () => {
       mockRepository.save = jest.fn().mockReturnValue(null);
 
-      const order = service.create(mockAddAccountParams);
+      const order = service.create(mockCreateOrderParams);
 
       expect(order).rejects.toThrow(InternalServerErrorException);
     })
@@ -115,7 +115,7 @@ describe('OrdersService', () => {
       mockRepository.create = jest.fn().mockReturnValue(mockUpdatedOrderModel);
       mockRepository.save = jest.fn().mockReturnValue(null);
 
-      const orderUpdated = service.update(2, mockAddAccountParams);
+      const orderUpdated = service.update(2, mockCreateOrderParams);
 
       expect(orderUpdated).rejects.toThrow(InternalServerErrorException);
     })
@@ -144,6 +144,7 @@ describe('OrdersService', () => {
 
       await expect(deletedOrder).rejects.toThrow(NotFoundException);
       expect(service.findOne).toHaveBeenCalledWith(1);
+      expect(mockRepository.save).not.toHaveBeenCalled();
       expect(mockRepository.delete).not.toHaveBeenCalled();
     });
   });

@@ -8,24 +8,25 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { Product } from './entities/product.entity';
 import { ProductsService } from './products.service';
 import {
-  mockAddAccountParams,
+  mockCreateProductParams,
   mockUpdateProductParams,
   mockUpdatedProductModel,
   mockProductModel,
   mockProductArrayModel,
 } from './../common/test/mockProducts';
 
+
+export const mockRepository = {
+  find: jest.fn().mockReturnValue(mockProductArrayModel),
+  findOne: jest.fn().mockReturnValue(mockProductModel),
+  create: jest.fn().mockReturnValue(mockProductModel),
+  save: jest.fn().mockReturnValue(mockProductModel),
+  update: jest.fn().mockReturnValue(mockUpdatedProductModel),
+  delete: jest.fn().mockReturnValue({ affected: 1 }),
+};
+
 describe('ProductsService', () => {
   let service: ProductsService;
-
-  const mockRepository = {
-    find: jest.fn().mockReturnValue(mockProductArrayModel),
-    findOne: jest.fn().mockReturnValue(mockProductModel),
-    create: jest.fn().mockReturnValue(mockProductModel),
-    save: jest.fn().mockReturnValue(mockProductModel),
-    update: jest.fn().mockReturnValue(mockUpdatedProductModel),
-    delete: jest.fn().mockReturnValue({ affected: 1 }),
-  };
 
   beforeEach(async () => {
     jest.clearAllMocks();
@@ -79,9 +80,9 @@ describe('ProductsService', () => {
 
   describe('When create a product', () => {
     it('Should create a product', async () => {
-      const product = await service.create(mockAddAccountParams);
+      const product = await service.create(mockCreateProductParams);
 
-      expect(mockRepository.create).toHaveBeenCalledWith(mockAddAccountParams);
+      expect(mockRepository.create).toHaveBeenCalledWith(mockCreateProductParams);
       expect(mockRepository.save).toHaveBeenCalledTimes(1);
       expect(product).toBe(mockProductModel);
     });
@@ -89,7 +90,7 @@ describe('ProductsService', () => {
     it('Should return an error if repository does not create a product', async () => {
       mockRepository.save = jest.fn().mockReturnValue(null);
 
-      const product = service.create(mockAddAccountParams);
+      const product = service.create(mockCreateProductParams);
 
       expect(product).rejects.toThrow(InternalServerErrorException);
     })
@@ -112,7 +113,7 @@ describe('ProductsService', () => {
       service.findOne = jest.fn().mockReturnValueOnce(mockProductModel);
       mockRepository.update = jest.fn().mockReturnValue(null);
 
-      const productUpdated = service.update(1, mockAddAccountParams);
+      const productUpdated = service.update(1, mockCreateProductParams);
 
       expect(productUpdated).rejects.toThrow(InternalServerErrorException);
     })

@@ -1,14 +1,20 @@
 {
   "collectCoverage": true,
   "roots": [
-    "<rootDir>/src/"
+    "<rootDir>/src"
   ],
   "modulePathIgnorePatterns": [
-    "src/common/test/"
+    "<rootDir>/src/common/test/*.ts",
+    "/entities"
+  ],
+  "collectCoverageFrom": [
+    "<rootDir>/src/**/*.service.ts",
+    "<rootDir>/src/**/*.controller.ts",
+    "!<rootDir>/src/pdf/*.ts"
   ],
   "testMatch": [
     "/tests //*.spec.ts",
-    "**/__tests__/**/*.+(ts|tsx|js)",
+    "**/__tests__ /**/*.+(ts|tsx|js)",
     "**/?(*.)+(spec|test).+(ts|tsx|js)"
   ],
   "transform": {

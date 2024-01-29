@@ -3,7 +3,7 @@ import { UpdateCustomerDto } from '../../customers/dto/update-customer.dto';
 import { Customer, Gender } from './../../customers/entities/customer.entity';
 import { mockOrderModel } from './mockOrders';
 
-export const mockAddAccountParams: CreateCustomerDto = {
+export const mockCreateCustomerParams: CreateCustomerDto = {
   name: 'Test Customer 1',
   cpf: '19047878000',
   gender: Gender.OTHER,
@@ -16,7 +16,7 @@ export const mockUpdateCustomerParams: UpdateCustomerDto = {
 
 export const mockCustomerModel: Customer = {
   id: 1,
-  ...mockAddAccountParams,
+  ...mockCreateCustomerParams,
   code: '123abc',
   beforeInsertActions: function (): void {
     throw new Error('Function not implemented.');

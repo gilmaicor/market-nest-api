@@ -4,7 +4,7 @@ import { Order, PaymentMethod } from './../../orders/entities/order.entity';
 import { mockCustomerModel } from './mockCustomers';
 import { mockProductArrayModel } from './mockProducts';
 
-export const mockAddAccountParams: CreateOrderDto = {
+export const mockCreateOrderParams: CreateOrderDto = {
   date: new Date('2021-03-11 07:37:13'),
   note: 'Pagamento à vista',
   paymentMethod: PaymentMethod.CASH,
@@ -19,7 +19,7 @@ export const mockUpdateOrderParams: UpdateOrderDto = {
 export const mockOrderModel: Order = {
   id: 1,
   code: '123abc',
-  ...mockAddAccountParams,
+  ...mockCreateOrderParams,
   beforeInsertActions: function (): void {
     throw new Error('Function not implemented.');
   },
