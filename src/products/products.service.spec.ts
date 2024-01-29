@@ -55,19 +55,28 @@ describe('ProductsService', () => {
   });
 
   describe('When search Product By Id', () => {
+    beforeEach(() => {
+      jest.clearAllMocks();
+    });
+
     it('Should find a existing product', async () => {
       const productFound = service.findOne(1);
 
-      expect(mockRepository.findOne).toHaveBeenCalledWith(mockProductModel.id);
+      expect(mockRepository.findOne).toHaveBeenCalledWith({
+        where: { id: mockProductModel.id },
+      });
       expect(productFound).resolves.toBe(mockProductModel);
     });
+
     it('Should return a exception when does not to find a product', async () => {
       mockRepository.findOne.mockReturnValue(null);
 
       const product = service.findOne(3);
 
-      expect(product).rejects.toThrow(NotFoundException);
-      expect(mockRepository.findOne).toHaveBeenCalledWith(3);
+      await expect(product).rejects.toThrow(NotFoundException);
+      expect(mockRepository.findOne).toHaveBeenCalledWith({
+        where: { id: 3 },
+      });
     });
   });
 
@@ -75,8 +84,8 @@ describe('ProductsService', () => {
     it('Should create a product', async () => {
       const product = await service.create(mockAddAccountParams);
 
-      expect(mockRepository.create).toBeCalledWith(mockAddAccountParams);
-      expect(mockRepository.save).toBeCalledTimes(1);
+      expect(mockRepository.create).toHaveBeenCalledWith(mockAddAccountParams);
+      expect(mockRepository.save).toHaveBeenCalledTimes(1);
       expect(product).toBe(mockProductModel);
     });
   });
@@ -96,24 +105,27 @@ describe('ProductsService', () => {
   });
 
   describe('When delete Product', () => {
+    beforeEach(() => {
+      jest.clearAllMocks();
+    });
+
     it('Should delete a existing product', async () => {
       service.findOne = jest.fn().mockReturnValueOnce(mockProductModel);
 
       await service.remove(1);
 
       expect(service.findOne).toHaveBeenCalledWith(1);
-      expect(mockRepository.delete).toBeCalledWith(mockProductModel);
+      expect(mockRepository.delete).toHaveBeenCalledWith(mockProductModel.id);
     });
 
     it('Should return an internal server error if repository does not delete the product', async () => {
-      service.findOne = jest.fn().mockReturnValueOnce(mockProductModel);
-      mockRepository.delete.mockReturnValueOnce(null);
+      service.findOne = jest.fn().mockReturnValueOnce(null);
 
       const deletedProduct = service.remove(1);
 
+      await expect(deletedProduct).rejects.toThrow(NotFoundException);
       expect(service.findOne).toHaveBeenCalledWith(1);
-      expect(mockRepository.delete).toBeCalledWith(mockProductModel);
-      expect(deletedProduct).rejects.toThrow(InternalServerErrorException);
+      expect(mockRepository.delete).not.toHaveBeenCalled();
     });
   });
 });

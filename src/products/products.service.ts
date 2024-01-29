@@ -20,7 +20,7 @@ export class ProductsService {
     const product = this.productRepository.create(createProductDto);
     const productSaved = await this.productRepository.save(product);
     if (!productSaved)
-      throw new InternalServerErrorException('Falha ao criar cliente');
+      throw new InternalServerErrorException('Falha ao criar Produto.');
 
     return productSaved;
   }
@@ -37,7 +37,7 @@ export class ProductsService {
       },
     });
     if (!product) {
-      throw new NotFoundException('Produto não encontrado');
+      throw new NotFoundException('Produto não encontrado.');
     }
     return product;
   }
@@ -51,7 +51,7 @@ export class ProductsService {
       ...updateProductDto,
     });
     if (!updated) {
-      throw new InternalServerErrorException('Falha ao atualizar produto');
+      throw new InternalServerErrorException('Falha ao atualizar Produto.');
     }
     const productUpdated = this.productRepository.create({
       ...product,
@@ -62,6 +62,9 @@ export class ProductsService {
 
   async remove(id: number): Promise<boolean> {
     const product = await this.findOne(id);
+    if (!product) {
+      throw new NotFoundException('Produto não encontrado ou já foi excluido.');
+    }
     const deleted = await this.productRepository.delete(product.id);
     return !!deleted;
   }

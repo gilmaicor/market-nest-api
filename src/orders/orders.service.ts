@@ -20,7 +20,7 @@ export class OrdersService {
     const order = this.orderRepository.create(createOrderDto);
     const orderSaved = await this.orderRepository.save(order);
     if (!orderSaved)
-      throw new InternalServerErrorException('Falha ao criar Pedido');
+      throw new InternalServerErrorException('Falha ao criar Pedido.');
 
     return orderSaved;
   }
@@ -42,7 +42,7 @@ export class OrdersService {
       loadEagerRelations: true,
     });
     if (!order) {
-      throw new NotFoundException('Pedido não encontrado');
+      throw new NotFoundException('Pedido não encontrado.');
     }
     return order;
   }
@@ -53,7 +53,7 @@ export class OrdersService {
       ...updateOrderDto,
     });
     if (!updated) {
-      throw new InternalServerErrorException('Falha ao atualizar Pedido');
+      throw new InternalServerErrorException('Falha ao atualizar Pedido.');
     }
     const orderUpdated = this.orderRepository.create({
       ...product,
@@ -65,7 +65,7 @@ export class OrdersService {
   async remove(id: number): Promise<boolean> {
     const order = await this.findOne(id);
     if (!order) {
-      throw new NotFoundException('Pedido não encontrado');
+      throw new NotFoundException('Pedido não encontrado ou já foi excluido.');
     }
     delete order.products;
     const deleteable = await this.orderRepository.save(order);

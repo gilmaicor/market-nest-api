@@ -20,7 +20,7 @@ export class CustomersService {
     const customer = this.customerRepository.create(createCustomerDto);
     const customerSaved = await this.customerRepository.save(customer);
     if (!customerSaved)
-      throw new InternalServerErrorException('Falha ao criar cliente');
+      throw new InternalServerErrorException('Falha ao criar Cliente.');
 
     return customerSaved;
   }
@@ -37,7 +37,7 @@ export class CustomersService {
       },
     });
     if (!customer) {
-      throw new NotFoundException('Cliente não encontrado');
+      throw new NotFoundException('Cliente não encontrado.');
     }
     return customer;
   }
@@ -51,7 +51,7 @@ export class CustomersService {
       ...updateCustomerDto,
     });
     if (!updated) {
-      throw new InternalServerErrorException('Falha ao atualizar cliente');
+      throw new InternalServerErrorException('Falha ao atualizar Cliente.');
     }
     const customerUpdated = this.customerRepository.create({
       ...customer,
@@ -62,6 +62,9 @@ export class CustomersService {
 
   async remove(id: number): Promise<boolean> {
     const customer = await this.findOne(id);
+    if (!customer) {
+      throw new NotFoundException('Cliente não encontrado ou já foi excluido.');
+    }
     const deleted = await this.customerRepository.delete(customer?.id);
     return !!deleted;
   }

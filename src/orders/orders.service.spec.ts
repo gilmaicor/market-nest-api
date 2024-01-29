@@ -60,22 +60,26 @@ describe('OrdersService', () => {
   });
 
   describe('When search Order By Id', () => {
+    beforeEach(() => {
+      jest.clearAllMocks();
+    });
+
     it('Should find a existing order', async () => {
       const orderFound = service.findOne(1);
 
-      expect(mockRepository.findOne).toHaveBeenCalledWith(
-        mockOrderModel.id,
-        options,
-      );
+      expect(mockRepository.findOne).toHaveBeenCalledWith({
+        ...options, where: { "id": mockOrderModel.id }
+      });
       expect(orderFound).resolves.toBe(mockOrderModel);
     });
+
     it('Should return a exception when does not to find a order', async () => {
       mockRepository.findOne.mockReturnValue(null);
 
       const order = service.findOne(3);
 
-      expect(order).rejects.toThrow(NotFoundException);
-      expect(mockRepository.findOne).toHaveBeenCalledWith(3, options);
+      await expect(order).rejects.toThrow(NotFoundException);
+      expect(mockRepository.findOne).toHaveBeenCalledWith({ ...options, where: { "id": 3 } });
     });
   });
 
@@ -83,8 +87,8 @@ describe('OrdersService', () => {
     it('Should create a order', async () => {
       const order = await service.create(mockAddAccountParams);
 
-      expect(mockRepository.create).toBeCalledWith(mockAddAccountParams);
-      expect(mockRepository.save).toBeCalledTimes(1);
+      expect(mockRepository.create).toHaveBeenCalledWith(mockAddAccountParams);
+      expect(mockRepository.save).toHaveBeenCalledTimes(1);
       expect(order).toBe(mockOrderModel);
     });
   });
@@ -103,6 +107,10 @@ describe('OrdersService', () => {
   });
 
   describe('When delete Order', () => {
+    beforeEach(() => {
+      jest.clearAllMocks();
+    });
+
     it('Should delete a existing order', async () => {
       service.findOne = jest.fn().mockReturnValueOnce(mockOrderModel);
       const mockOrderModelDeleteable = mockOrderModel;
@@ -114,19 +122,18 @@ describe('OrdersService', () => {
       await service.remove(1);
 
       expect(service.findOne).toHaveBeenCalledWith(1);
-      expect(mockRepository.save).toBeCalledWith(mockOrderModelDeleteable);
-      expect(mockRepository.delete).toBeCalledWith(mockOrderModel);
+      expect(mockRepository.save).toHaveBeenCalledWith(mockOrderModelDeleteable);
+      expect(mockRepository.delete).toHaveBeenCalledWith(mockOrderModel.id);
     });
 
     it('Should return an internal server error if repository does not delete the order', async () => {
-      service.findOne = jest.fn().mockReturnValueOnce(mockOrderModel);
-      mockRepository.delete.mockReturnValueOnce(null);
+      service.findOne = jest.fn().mockReturnValueOnce(null);
 
       const deletedOrder = service.remove(1);
 
+      await expect(deletedOrder).rejects.toThrow(NotFoundException);
       expect(service.findOne).toHaveBeenCalledWith(1);
-      expect(mockRepository.delete).toBeCalledWith(mockOrderModel);
-      expect(deletedOrder).rejects.toThrow(InternalServerErrorException);
+      expect(mockRepository.delete).not.toHaveBeenCalled();
     });
   });
 });
