@@ -47,16 +47,16 @@ export class CustomersService {
     updateCustomerDto: UpdateCustomerDto,
   ): Promise<Customer> {
     const customer = await this.findOne(id);
-    const updated = await this.customerRepository.update(customer?.id, {
-      ...updateCustomerDto,
-    });
-    if (!updated) {
-      throw new InternalServerErrorException('Falha ao atualizar Cliente.');
-    }
     const customerUpdated = this.customerRepository.create({
       ...customer,
       ...updateCustomerDto,
     });
+    const updated = await this.customerRepository.update(customer?.id, {
+      ...customerUpdated,
+    });
+    if (!updated) {
+      throw new InternalServerErrorException('Falha ao atualizar Cliente.');
+    }
     return customerUpdated;
   }
 

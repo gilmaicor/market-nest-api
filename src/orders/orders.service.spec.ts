@@ -33,6 +33,7 @@ describe('OrdersService', () => {
   };
 
   beforeEach(async () => {
+    jest.clearAllMocks();
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         OrdersService,
@@ -60,10 +61,6 @@ describe('OrdersService', () => {
   });
 
   describe('When search Order By Id', () => {
-    beforeEach(() => {
-      jest.clearAllMocks();
-    });
-
     it('Should find a existing order', async () => {
       const orderFound = service.findOne(1);
 
@@ -91,6 +88,14 @@ describe('OrdersService', () => {
       expect(mockRepository.save).toHaveBeenCalledTimes(1);
       expect(order).toBe(mockOrderModel);
     });
+
+    it('Should return an error if repository does not create an order', async () => {
+      mockRepository.save = jest.fn().mockReturnValue(null);
+
+      const order = service.create(mockAddAccountParams);
+
+      expect(order).rejects.toThrow(InternalServerErrorException);
+    })
   });
 
   describe('When update Order', () => {
@@ -104,13 +109,19 @@ describe('OrdersService', () => {
       expect(service.findOne).toHaveBeenCalledWith(1);
       expect(orderUpdated).toBe(mockUpdatedOrderModel);
     });
+
+    it('Should return an error if repository does not update an order', async () => {
+      service.findOne = jest.fn().mockReturnValueOnce(mockOrderModel);
+      mockRepository.create = jest.fn().mockReturnValue(mockUpdatedOrderModel);
+      mockRepository.save = jest.fn().mockReturnValue(null);
+
+      const orderUpdated = service.update(2, mockAddAccountParams);
+
+      expect(orderUpdated).rejects.toThrow(InternalServerErrorException);
+    })
   });
 
   describe('When delete Order', () => {
-    beforeEach(() => {
-      jest.clearAllMocks();
-    });
-
     it('Should delete a existing order', async () => {
       service.findOne = jest.fn().mockReturnValueOnce(mockOrderModel);
       const mockOrderModelDeleteable = mockOrderModel;
@@ -126,7 +137,7 @@ describe('OrdersService', () => {
       expect(mockRepository.delete).toHaveBeenCalledWith(mockOrderModel.id);
     });
 
-    it('Should return an internal server error if repository does not delete the order', async () => {
+    it('Should return an error if repository does not delete an order', async () => {
       service.findOne = jest.fn().mockReturnValueOnce(null);
 
       const deletedOrder = service.remove(1);

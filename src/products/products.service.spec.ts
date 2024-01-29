@@ -28,6 +28,7 @@ describe('ProductsService', () => {
   };
 
   beforeEach(async () => {
+    jest.clearAllMocks();
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         ProductsService,
@@ -55,10 +56,6 @@ describe('ProductsService', () => {
   });
 
   describe('When search Product By Id', () => {
-    beforeEach(() => {
-      jest.clearAllMocks();
-    });
-
     it('Should find a existing product', async () => {
       const productFound = service.findOne(1);
 
@@ -88,6 +85,14 @@ describe('ProductsService', () => {
       expect(mockRepository.save).toHaveBeenCalledTimes(1);
       expect(product).toBe(mockProductModel);
     });
+
+    it('Should return an error if repository does not create a product', async () => {
+      mockRepository.save = jest.fn().mockReturnValue(null);
+
+      const product = service.create(mockAddAccountParams);
+
+      expect(product).rejects.toThrow(InternalServerErrorException);
+    })
   });
 
   describe('When update Product', () => {
@@ -102,13 +107,18 @@ describe('ProductsService', () => {
       expect(service.findOne).toHaveBeenCalledWith(1);
       expect(productUpdated).toBe(mockUpdatedProductModel);
     });
+
+    it('Should return an error if repository does not update an product', async () => {
+      service.findOne = jest.fn().mockReturnValueOnce(mockProductModel);
+      mockRepository.update = jest.fn().mockReturnValue(null);
+
+      const productUpdated = service.update(1, mockAddAccountParams);
+
+      expect(productUpdated).rejects.toThrow(InternalServerErrorException);
+    })
   });
 
   describe('When delete Product', () => {
-    beforeEach(() => {
-      jest.clearAllMocks();
-    });
-
     it('Should delete a existing product', async () => {
       service.findOne = jest.fn().mockReturnValueOnce(mockProductModel);
 
@@ -118,7 +128,7 @@ describe('ProductsService', () => {
       expect(mockRepository.delete).toHaveBeenCalledWith(mockProductModel.id);
     });
 
-    it('Should return an internal server error if repository does not delete the product', async () => {
+    it('Should return an error if repository does not delete a product', async () => {
       service.findOne = jest.fn().mockReturnValueOnce(null);
 
       const deletedProduct = service.remove(1);

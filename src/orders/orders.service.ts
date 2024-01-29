@@ -48,17 +48,15 @@ export class OrdersService {
   }
 
   async update(id: number, updateOrderDto: UpdateOrderDto): Promise<Order> {
-    const product = await this.findOne(id);
-    const updated = await this.orderRepository.update(product.id, {
+    const order = await this.findOne(id);
+    const orderUpdated = this.orderRepository.create({
+      ...order,
       ...updateOrderDto,
     });
+    const updated = await this.orderRepository.save(orderUpdated);
     if (!updated) {
       throw new InternalServerErrorException('Falha ao atualizar Pedido.');
     }
-    const orderUpdated = this.orderRepository.create({
-      ...product,
-      ...updateOrderDto,
-    });
     return orderUpdated;
   }
 

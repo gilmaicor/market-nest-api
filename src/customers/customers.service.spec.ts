@@ -28,6 +28,7 @@ describe('CustomersService', () => {
   };
 
   beforeEach(async () => {
+    jest.clearAllMocks();
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         CustomersService,
@@ -55,10 +56,6 @@ describe('CustomersService', () => {
   });
 
   describe('When search Customer By Id', () => {
-    beforeEach(() => {
-      jest.clearAllMocks();
-    });
-
     it('Should find a existing customer', async () => {
       const customerFound = service.findOne(1);
 
@@ -88,6 +85,14 @@ describe('CustomersService', () => {
       expect(mockRepository.save).toHaveBeenCalledTimes(1);
       expect(customer).toBe(mockCustomerModel);
     });
+
+    it('Should return an error if repository does not create a customer', async () => {
+      mockRepository.save = jest.fn().mockReturnValue(null);
+
+      const customer = service.create(mockAddAccountParams);
+
+      expect(customer).rejects.toThrow(InternalServerErrorException);
+    })
   });
 
   describe('When update Customer', () => {
@@ -102,13 +107,19 @@ describe('CustomersService', () => {
       expect(service.findOne).toHaveBeenCalledWith(1);
       expect(customerUpdated).toBe(mockUpdatedCustomerModel);
     });
+
+
+    it('Should return an error if repository does not update an customer', async () => {
+      service.findOne = jest.fn().mockReturnValueOnce(mockCustomerModel);
+      mockRepository.update = jest.fn().mockReturnValue(null);
+
+      const customerUpdated = service.update(1, mockAddAccountParams);
+
+      expect(customerUpdated).rejects.toThrow(InternalServerErrorException);
+    })
   });
 
   describe('When delete Customer', () => {
-    beforeEach(() => {
-      jest.clearAllMocks();
-    });
-
     it('Should delete a existing customer', async () => {
       service.findOne = jest.fn().mockReturnValueOnce(mockCustomerModel);
 
@@ -118,7 +129,7 @@ describe('CustomersService', () => {
       expect(mockRepository.delete).toHaveBeenCalledWith(mockCustomerModel.id);
     });
 
-    it('Should return an internal server error if repository does not delete the customer', async () => {
+    it('Should return an error if repository does not delete a customer', async () => {
       service.findOne = jest.fn().mockReturnValueOnce(null);
 
       const deletedCustomer = service.remove(1);

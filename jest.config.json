@@ -1,8 +1,13 @@
 {
+  "collectCoverage": true,
   "roots": [
-    "<rootDir>/src"
+    "<rootDir>/src/"
+  ],
+  "modulePathIgnorePatterns": [
+    "src/common/test/"
   ],
   "testMatch": [
+    "/tests //*.spec.ts",
     "**/__tests__/**/*.+(ts|tsx|js)",
     "**/?(*.)+(spec|test).+(ts|tsx|js)"
   ],

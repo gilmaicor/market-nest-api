@@ -47,16 +47,16 @@ export class ProductsService {
     updateProductDto: UpdateProductDto,
   ): Promise<Product> {
     const product = await this.findOne(id);
-    const updated = await this.productRepository.update(product.id, {
-      ...updateProductDto,
-    });
-    if (!updated) {
-      throw new InternalServerErrorException('Falha ao atualizar Produto.');
-    }
     const productUpdated = this.productRepository.create({
       ...product,
       ...updateProductDto,
     });
+    const updated = await this.productRepository.update(product.id, {
+      ...productUpdated,
+    });
+    if (!updated) {
+      throw new InternalServerErrorException('Falha ao atualizar Produto.');
+    }
     return productUpdated;
   }
 
